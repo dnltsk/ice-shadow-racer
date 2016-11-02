@@ -12,22 +12,10 @@ L.Playback.Control = L.Control.extend({
 '            <a id="play-pause" href="#"><i id="play-pause-icon" class="fa fa-play fa-lg"></i></a>' +
 '          </li>' +
 '          <li class="ctrl dropup">' +
-'            <a id="clock-btn" class="clock" data-toggle="dropdown" href="#">' +
-'              <span id="cursor-date"></span><br/>' +
+'            <a class="clock">' +
+'              <span>Time:</span><br/>' +
 '              <span id="cursor-time"></span>' +
 '            </a>' +
-'            <div class="dropdown-menu" role="menu" aria-labelledby="clock-btn">' +
-'              <label>Playback Cursor Time</label>' +
-'              <div class="input-append bootstrap-timepicker">' +
-'                <input id="timepicker" type="text" class="input-small span2">' +
-'                <span class="add-on"><i class="fa fa-clock-o"></i></span>' +
-'              </div>' +
-'              <div id="calendar"></div>' +
-'              <div class="input-append">' +
-'                <input id="date-input" type="text" class="input-small">' +
-'                <span class="add-on"><i class="fa fa-calendar"></i></span>' +
-'              </div>' +
-'            </div>' +
 '          </li>' +
 '        </ul>' +
 '        <ul class="nav pull-right">' +
@@ -46,24 +34,7 @@ L.Playback.Control = L.Control.extend({
 '      </div>' +
 '    </div>' +
 '  </div>' +
-'</footer>' +
-'<div id="load-tracks-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="load-tracks-label" aria-hidden="true">' +
-'  <div class="modal-header">' +
-'    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>' +
-'    <h3 id="load-tracks-label">Load GPS Tracks</h3>' +
-'  </div>' +
-'  <div class="modal-body">' +
-'    <p>' +
-'      Leaflet Playback supports GeoJSON and GPX files. CSV support coming soon!' +
-'    </p>' +
-'    <label>Upload a File</label>' +
-'    <input type="file" id="load-tracks-file" />' +
-'  </div>' +
-'  <div class="modal-footer">' +
-'    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>' +
-'    <button id="load-tracks-save" class="btn btn-primary">Load</button>' +
-'  </div>' +
-'</div>',
+'</footer>',
 
   initialize: function(playback) {
     this.playback = playback;
@@ -96,7 +67,6 @@ L.Playback.Control = L.Control.extend({
     });
 
     var startTime = playback.getStartTime();
-    $('#cursor-date').html(L.Playback.Util.DateStr(startTime));
     $('#cursor-time').html(L.Playback.Util.TimeStr(startTime));
 
     $('#time-slider').slider({
@@ -135,67 +105,22 @@ L.Playback.Control = L.Control.extend({
       }
     });
 
-    $('#calendar').datepicker({
-      changeMonth: true,
-      changeYear: true,
-      altField: '#date-input',
-      altFormat: 'mm/dd/yy',
-      defaultDate: new Date(playback.getTime()),
-      onSelect: function(date) {
-        var date = new Date(date);
-        var time = $('#timepicker').data('timepicker');
-        var ts = self._combineDateAndTime(date, time);
-        playback.setCursor(ts);
-        $('#time-slider').slider('value', ts);
-      }
-    }); 
-
-    $('#date-input').on('keyup', function(e) {
-      $('#calendar').datepicker('setDate', $('#date-input').val());
-    });
-
     $('.dropdown-menu').on('click', function(e) {
       e.stopPropagation();
-    });
-
-    $('#timepicker').timepicker({
-      showSeconds: true
-    });
-    
-    $('#timepicker').timepicker('setTime', 
-        new Date(playback.getTime()).toTimeString());
-
-    $('#timepicker').timepicker().on('changeTime.timepicker', function(e) {
-      var date = $('#calendar').datepicker('getDate');
-      var ts = self._combineDateAndTime(date, e.time);
-      playback.setCursor(ts);
-      $('#time-slider').slider('value', ts);
-    });
-
-    $('#load-tracks-btn').on('click', function(e) {
-      $('#load-tracks-modal').modal();
-    });
-
-    $('#load-tracks-save').on('click', function(e) {
-      var file = $('#load-tracks-file').get(0).files[0];
-      self._loadTracksFromFile(file);
     });
 
   },
 
   _clockCallback: function(ms) {
-    $('#cursor-date').html(L.Playback.Util.DateStr(ms));
     $('#cursor-time').html(L.Playback.Util.TimeStr(ms));
     $('#time-slider').slider('value', ms);
   },
 
   _speedToSliderVal: function(speed) {
-   console.log(speed);
     return Math.round(Math.log2(speed));
   },
 
   _sliderValToSpeed: function(val) {
-   console.log(val);
     return Math.round(Math.pow(2, val));
   },
 

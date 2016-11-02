@@ -21,66 +21,16 @@ L.Playback = L.Playback || {};
 L.Playback.Util = L.Class.extend({
   statics: {
 
-    DateStr: function(time) {
-      return new Date(time).toDateString();
-    },
-
     TimeStr: function(time) {
       var d = new Date(time);
       var h = d.getHours();
       var m = d.getMinutes();
       var s = d.getSeconds();
-      var tms = time / 1000;
-      var dec = (tms - Math.floor(tms)).toFixed(2).slice(1);
-      var mer = 'AM';
-      if (h > 11) {
-        h %= 12;
-        mer = 'PM';
-      } 
-      if (h === 0) h = 12;
       if (m < 10) m = '0' + m;
       if (s < 10) s = '0' + s;
-      return h + ':' + m + ':' + s + dec + ' ' + mer;
-    },
-
-    ParseGPX: function(gpx) {
-      var geojson = {
-        type: 'Feature',
-        geometry: {
-          type: 'MultiPoint',
-          coordinates: []
-        },
-        properties: {
-          time: [],
-          speed: [],
-          altitude: []
-        },
-        bbox: []
-      };
-      var xml = $.parseXML(gpx);
-      var pts = $(xml).find('trkpt');
-      for (var i=0, len=pts.length; i<len; i++) {
-        var p = pts[i];
-        var lat = parseFloat(p.getAttribute('lat'));
-        var lng = parseFloat(p.getAttribute('lon'));
-        var timeStr = $(p).find('time').text();
-        var eleStr = $(p).find('ele').text();
-        var t = new Date(timeStr).getTime();
-        var ele = parseFloat(eleStr);
-
-        var coords = geojson.geometry.coordinates;
-        var props = geojson.properties;
-        var time = props.time;
-        var altitude = geojson.properties.altitude;
-
-        coords.push([lng,lat]);
-        time.push(t);
-        altitude.push(ele);
-      }
-      return geojson;
+      return h + ':' + m + ':' + s;
     }
   }
-
 });
 
 L.Playback = L.Playback || {};
@@ -605,10 +555,6 @@ hslToRgb: function (h, s, l){
             }
             lastLngLat = lngLat;
         }
-        var bnds = new L.LatLngBounds(latLngs);
-        if (!this._map.getBounds().contains(latLngs[0])) {
-		this._map.panTo(bnds.getCenter());
-        }
         var value = length/0.315;
         var opacity = Math.pow(value, 1);
         var hue = 0.33 - 0.33 * Math.pow(value, 0.5);
@@ -664,7 +610,7 @@ L.Playback.Clock = L.Class.extend({
     L.setOptions(this, options);
     this._speed = this.options.speed;
     this._tickLen = this.options.tickLen;
-    this._cursor = trackController.getStartTime();
+    this._cursor = this.options.cursor || trackController.getStartTime();
     this._transitionTime = this._tickLen / this._speed;
   },
 
@@ -771,13 +717,6 @@ L.Playback.TracksLayer = L.Class.extend({
     
         this.layer = new L.GeoJSON(null, layer_options);
 
-        var overlayControl = {
-            'GPS Tracks' : this.layer
-        };
-
-        L.control.layers(null, overlayControl, {
-            collapsed : false
-        }).addTo(map);
     },
 
     // clear all geoJSON layers
@@ -797,7 +736,6 @@ L.Playback = L.Playback || {};
 L.Playback.DateControl = L.Control.extend({
     options : {
         position : 'bottomleft',
-        dateFormatFn: L.Playback.Util.DateStr,
         timeFormatFn: L.Playback.Util.TimeStr
     },
 
@@ -816,15 +754,12 @@ L.Playback.DateControl = L.Control.extend({
         var datetime = L.DomUtil.create('div', 'datetimeControl', this._container);
 
         // date time
-        this._date = L.DomUtil.create('p', '', datetime);
         this._time = L.DomUtil.create('p', '', datetime);
 
-        this._date.innerHTML = this.options.dateFormatFn(time);
         this._time.innerHTML = this.options.timeFormatFn(time);
 
         // setup callback
         playback.addCallback(function (ms) {
-            self._date.innerHTML = self.options.dateFormatFn(ms);
             self._time.innerHTML = self.options.timeFormatFn(ms);
         });
 

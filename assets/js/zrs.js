@@ -61,6 +61,7 @@ $(function() {
 
     // Playback options
     var playbackOptions = {        
+        speed: 512,       
         // layer and marker options
         layer: {
             pointToLayer : function(featureData, latlng){
@@ -91,9 +92,12 @@ $(function() {
     
     // Initialize playback
     playback = new L.Playback(map, tracks, null, playbackOptions);
-    
+    playback.setSpeed(512);
     // Initialize custom control
     var control = new L.Playback.Control(playback);
     control.addTo(map);
-    
+
+    playback.setCursor(46260000);
+    playback.setSpeed(512);
+    $('.speed').html(512).val(512);
 });
