@@ -2,7 +2,10 @@ $(function() {
     // Setup leaflet map
     var map = new L.Map('map');
 
-    var basemapLayer = new L.TileLayer('https://{s}.tiles.mapbox.com/v3/github.map-xgq2svrz/{z}/{x}/{y}.png');
+    var basemapLayer = new L.TileLayer('https://{s}.tiles.mapbox.com/v3/github.map-xgq2svrz/{z}/{x}/{y}.png',
+			{attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery &copy; <a href="http://mapbox.com">Mapbox</a>'});
 
     // Center map and default zoom level
     map.setView([51.5, 10.5], 6);
