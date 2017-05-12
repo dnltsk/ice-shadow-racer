@@ -1,0 +1,23 @@
+{
+  "name": "ice-shadow-racer",
+  "version": "1.0.0",
+  "description": "ICE Shadow Racer",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -p 3000 ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/highsource/ice-shadow-racer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/highsource/ice-shadow-racer/issues"
+  },
+  "homepage": "https://github.com/highsource/ice-shadow-racer#readme",
+  "devDependencies": {
+    "http-server": "^0.10.0"
+  }
+}
